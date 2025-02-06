@@ -1,2 +1,2 @@
 # Star of the Veldt
-A parallel bayesian optimizer originally written for gousbloum.
+Maybe work towards a Bayesian optimizer?
