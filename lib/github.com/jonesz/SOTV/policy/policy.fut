@@ -1,6 +1,6 @@
 module type policy = {
-	type v
+	type v [n]
 	type s
 
-	val f [n] : [n]v -> [n]s -> v -> s
+	val f [m][n] : [m]v[n] -> [n]s -> v[n] -> s
 }

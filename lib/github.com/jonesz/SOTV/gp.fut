@@ -1,16 +1,17 @@
 import "kernel"
 import "mean"
+import "../../athas/vector/vector"
 import "../../diku-dk/linalg/linalg"
 
 module type gp = {
-	type v
+	type v [n]
 	type s
 
-	val predictive_dist [n] : [n]v -> [n]s -> v -> (s, s)
+	val predictive_dist 'a [m][n] : [m]v[n] -> [m]s -> v[n] -> (s, s)
 }
 
-module mk_gp (R: real) (U: mean with s = R.t) (A: kernel with s = R.t with v = U.v) : gp = {
-	type v = U.v
+module mk_gp (R: real) (U: mean with v [n] = [n]R.t with s = R.t) (A: kernel with v[n] = [n]R.t with s = R.t) : gp with v [n] = [n]R.t = {
+	type v [n] = [n]R.t
 	type s = R.t
 
 	-- We need this for an inverse operation; it's Guass Jordan unfortunately.
@@ -18,16 +19,16 @@ module mk_gp (R: real) (U: mean with s = R.t) (A: kernel with s = R.t with v = U
 	module L = mk_ordered_linalg R
 
 	-- TODO: Rename, this is confusing with `k`.
- 	def K [n] (x: [n]v) =
+ 	def K x =
 		-- TODO: This is symmetric and can be minimized.
  		map (\x_i -> map (\x_j-> A.kernel x_i x_j) x) x
  
 	-- TODO: Rename, this is confusing with 'K'.
- 	def k [n] (x: [n]v) x_next = 
+ 	def k x x_next = 
  		map (A.kernel x_next) x
  
 	-- TODO: This is noiseless.
- 	def predictive_dist [n] (x: [n]v) (f: [n]s) x_next =
+ 	def predictive_dist x f x_next =
  		let K_inv = K x |> L.inv
  		let k_tmp = k x x_next
  		let u_t =
