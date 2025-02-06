@@ -26,6 +26,7 @@ module mk_gp (R: real) (U: mean with s = R.t) (A: kernel with s = R.t with v = U
  	def k [n] (x: [n]v) x_next = 
  		map (A.kernel x_next) x
  
+	-- TODO: This is noiseless.
  	def predictive_dist [n] (x: [n]v) (f: [n]s) x_next =
  		let K_inv = K x |> L.inv
  		let k_tmp = k x x_next
@@ -34,6 +35,7 @@ module mk_gp (R: real) (U: mean with s = R.t) (A: kernel with s = R.t with v = U
  			|> map2 (R.-) f
  			|> L.matvecmul_row K_inv
  			|> L.dotprod k_tmp
+			|> (R.+) (U.u x_next)
  
  		let stdev_t = L.matvecmul_row K_inv k_tmp |> L.dotprod k_tmp
  					|> (R.-) (A.kernel x_next x_next)
