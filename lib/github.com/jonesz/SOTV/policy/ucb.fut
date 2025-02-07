@@ -1,7 +1,8 @@
 import "../gp"
 import "policy"
 
-module mk_ucb (R: real) (GP: gp with v [n] = [n]R.t with s = R.t) (P: { val kappa: R.t }): policy = {
+module mk_ucb (R: real) (GP: gp with v [n] = [n]R.t with s = R.t) (P: { val kappa: R.t })
+	: policy with v [n] = [n]R.t with s = R.t = {
 	type v [n] = [n]R.t
 	type s = R.t
 

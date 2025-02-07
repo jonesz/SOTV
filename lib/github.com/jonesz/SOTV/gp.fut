@@ -7,10 +7,10 @@ module type gp = {
 	type v [n]
 	type s
 
-	val predictive_dist 'a [m][n] : [m]v[n] -> [m]s -> v[n] -> (s, s)
+	val predictive_dist [m][n] : [m]v[n] -> [m]s -> v[n] -> (s, s)
 }
 
-module mk_gp (R: real) (U: mean with v [n] = [n]R.t with s = R.t) (A: kernel with v[n] = [n]R.t with s = R.t) : gp with v [n] = [n]R.t = {
+module mk_gp (R: real) (U: mean with v [n] = [n]R.t with s = R.t) (A: kernel with v[n] = [n]R.t with s = R.t) : gp with v [n] = [n]R.t with s = R.t = {
 	type v [n] = [n]R.t
 	type s = R.t
 

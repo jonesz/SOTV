@@ -1,7 +1,12 @@
 import "policy/policy"
 import "policy/opt/gd"
 
-module mk_sotv (R: real) (P: policy with v [n] = [n]R.t with s = R.t) (GD: optimizer with v [n] = [n]R.t with s = R.t) = {
+module type sotv = {
+	type v [n]
+	type s
+}
+
+module mk_sotv (R: real) (P: policy with v [n] = [n]R.t with s = R.t) (GD: optimizer with v [n] = [n]R.t with s = R.t): sotv = {
 	type v [n] = [n]R.t
 	type s = R.t
 
