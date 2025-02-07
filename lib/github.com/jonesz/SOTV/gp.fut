@@ -3,6 +3,7 @@ import "mean"
 import "../../athas/vector/vector"
 import "../../diku-dk/linalg/linalg"
 import "../../diku-dk/linalg/lu"
+import "../../jonesz/krylov-fut/cgm"
 
 -- For the notes, theorem numbers, etc., see "Bayesian Optimization" by Roman Garnett.
 
@@ -63,6 +64,51 @@ module mk_direct_gp
  		let stdev_t =
 			let b = map (U.u) x |> map2 (R.-) f
 			in map (\x_i -> map (\x_j-> K.kernel x_i x_j) x) x |> flip (LU.ols 16) b
+			|> L.dotprod kx                   -- kx^T C_inv kx
+ 			|> (R.-) (K.kernel x_next x_next) -- k(x', x') kx^T C_inv kx
+
+  		in (u_t, stdev_t)
+}
+
+module mk_cg_gp
+	(R: real)
+	(V: vector)
+	(U: mean with v = V.vector R.t with s = R.t)
+	(K: kernel with v = V.vector R.t with s = R.t)
+	: gp with v = V.vector R.t with s = R.t = {
+
+	type v = V.vector R.t
+	type s = R.t
+	type mu = s
+	type stddev = s
+
+	module S = mk_cgm R
+	module L = mk_linalg R
+ 
+	-- (2.8)
+ 	def crosscov x x_next = 
+ 		map (K.kernel x_next) x
+
+	-- (2.3) ; the computation of the inverse of the Gram matrix.
+	def compute_u_inv [n] x f = 
+		-- TODO: This is symmetric and thus can be stored in a triangular matrix.
+		-- Ka = (Y - m(X))
+		let b = map (U.u) x |> map2 (R.-) f
+		let A = map (\x_i -> map (\x_j-> K.kernel x_i x_j) x) x
+		in S.cgm A b (replicate n (R.i64 0)) (R.f32 0.001f32) 100i64
+		 
+	-- (2.10)
+ 	def predictive_dist [n] u obs x_next =
+		let (x, _) = unzip obs
+ 		let kx = crosscov x x_next
+ 		let u_t =
+ 			L.dotprod u kx                -- k(x)^T C_inv (y - m)
+			|> (R.+) (U.u x_next)         -- u(x) + k(x)^T C_inv (y - m)
+ 
+ 		let stdev_t =
+			let b = kx
+			let A = map (\x_i -> map (\x_j-> K.kernel x_i x_j) x) x
+			in S.cgm A b (replicate n (R.i64 0)) (R.f32 0.001f32) 100i64 
 			|> L.dotprod kx                   -- kx^T C_inv kx
  			|> (R.-) (K.kernel x_next x_next) -- k(x', x') kx^T C_inv kx
 
