@@ -11,7 +11,7 @@ module mk_gd (R: real) : optimizer = {
 
 	def grad f x = vjp f x (R.i64 1) -- TODO: I have no idea what this last value means
 
-	def opt f  x_0 (max_iter: i64) =
+	def opt f x_0 (max_iter: i64) =
 		let step = ???
 		in loop x = x_0 for _i < max_iter do
 			grad f x |> map (R.* step) |> map2 (R.-) x
