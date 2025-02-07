@@ -11,6 +11,7 @@ module U = mk_mean_constant f32 vector_2 { def constant = 0f32 }
 module A = mk_kernel_se f32 vector_2 vspace_2_f32 { def l = 2.0f32
 							  						def sigma = 1.0f32 }
 module GP = mk_direct_gp f32 vector_2 U A
+module GP_CG = mk_cg_gp f32 vector_2 U A
 
 -- ==
 -- entry: bench_gp_f32
@@ -22,3 +23,14 @@ entry bench_gp_f32 X Y x =
 	let x = map (vector_2.from_array) x
 	let u = GP.compute_u_inv X Y
 	in map (GP.predictive_dist u (zip X Y)) x
+
+-- ==
+-- entry: bench_gp_cg_f32
+-- random input { [10][2]f32  [10]f32  [10][2]f32 }
+-- random input { [100][2]f32 [100]f32 [100][2]f32 }
+-- random input { [200][2]f32 [200]f32 [200][2]f32 }
+entry bench_gp_cg_f32 X Y x =
+	let X = map (vector_2.from_array) X
+	let x = map (vector_2.from_array) x
+	let u = GP_CG.compute_u_inv X Y
+	in map (GP_CG.predictive_dist u (zip X Y)) x
