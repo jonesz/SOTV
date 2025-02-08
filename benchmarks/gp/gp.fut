@@ -16,8 +16,9 @@ module GP_CG = mk_cg_gp f32 vector_2 U A
 -- ==
 -- entry: bench_gp_f32
 -- random input { [10][2]f32  [10]f32  [10][2]f32 }
--- random input { [100][2]f32 [100]f32 [100][2]f32 }
--- random input { [200][2]f32 [200]f32 [200][2]f32 }
+-- random input { [100][2]f32 [100]f32 [10][2]f32 }
+-- random input { [200][2]f32 [200]f32 [10][2]f32 }
+-- random input { [500][2]f32 [500]f32 [10][2]f32 }
 entry bench_gp_f32 X Y x =
 	let X = map (vector_2.from_array) X
 	let x = map (vector_2.from_array) x
@@ -27,8 +28,10 @@ entry bench_gp_f32 X Y x =
 -- ==
 -- entry: bench_gp_cg_f32
 -- random input { [10][2]f32  [10]f32  [10][2]f32 }
--- random input { [100][2]f32 [100]f32 [100][2]f32 }
--- random input { [200][2]f32 [200]f32 [200][2]f32 }
+-- random input { [100][2]f32 [100]f32 [10][2]f32 }
+-- random input { [200][2]f32 [200]f32 [10][2]f32 }
+-- random input { [500][2]f32 [500]f32 [10][2]f32 }
+-- random input { [1000000][2]f32 [1000000]f32 [1][2]f32 }
 entry bench_gp_cg_f32 X Y x =
 	let X = map (vector_2.from_array) X
 	let x = map (vector_2.from_array) x
