@@ -28,12 +28,13 @@ module mk_kernel_se
   type v = V.vector R.t
   type s = R.t
 
-  def kernel x x' =
-    -- (sigma^2)exp(-(||x-x'||^2)/(2l^2))
-    (S.-) x x' |> S.norm |> flip (R./) ((R.**) P.l (R.i64 2) |> (R.*) (R.i64 2))
-    |> R.neg
-    |> R.exp
-    |> (R.*) ((R.**) P.sigma (R.i64 2))
+  def kernel x_0 x_1 =
+    (S.-) x_0 x_1                                                  -- z := (x_0 - x_1)
+    |> S.norm                                                      -- y := |z|^2
+    |> (R.*) ((R.**) P.l (R.i64 2) |> (R.*) (R.i64 2) |> R.recip)  -- x := 1/2(l^2) * y
+    |> R.neg                                                       -- -x
+    |> R.exp                                                       -- exp(-x)
+    |> (R.*) ((R.**) P.sigma (R.i64 2))                            -- sigma^2 * exp(-x)
 
   def grad [n] x_0 x_1 =
     -- In this implementation, `P.l` is constant across the matrix; this works
