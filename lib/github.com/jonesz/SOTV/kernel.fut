@@ -43,10 +43,10 @@ module mk_kernel_se
     -- https://jungtaek.github.io/notes/derivatives_kernels.pdf
     let lhs =
       let z = (S.-) x_0 x_1                                    -- z := (x_0 - x_1)
-      in S.scale ((R.*) ((R.**) P.l (R.i64 2) |> R.recip)) tmp -- y := (1/l^2) * z
+      in S.scale ((R.**) P.l (R.i64 2) |> R.recip) z           -- y := (1/l^2) * z
         |> S.dot z                                             -- dot(y, z)
         |> (R.*) (R.recip (R.i64 2))                           -- (1/2) * dot(y, z)
-        |> R.neg                                               -- - (1/2) * dot(y, z)
+        |> R.neg                                               -- -(1/2) * dot(y, z)
         |> R.exp                                               -- exp(-(1/2) * dot(y, z))
         |> (R.*) ((R.**) P.sigma (R.i64 2))                    -- s^2 * exp(-(1/2) * dot(y, z))
 
@@ -58,7 +58,7 @@ module mk_kernel_se
         |> (R.*) (P.l |> flip (R.**) (R.i64 3) |> R.recip))    -- 1/l^3 * z
       (iota V.length)
 
-    in map ((R.*) left) right :> [n]s
+    in map ((R.*) lhs) rhs :> [n]s
 }
 
 --| Rational Quadratic Kernel.
