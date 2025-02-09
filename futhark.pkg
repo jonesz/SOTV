@@ -5,5 +5,5 @@ require {
   github.com/athas/vector 0.7.1 #c8f9f029530cb29db9b2957b80e65dbe893c01df
   github.com/diku-dk/sorts 0.6.0 #f448cd990c86c566715915a8fc4182c8c2ff5400
   github.com/diku-dk/cpprandom 1.3.1 #7ea358bd8bbbeb4786030a21a8d947ef37d1e032
-  github.com/jonesz/krylov-fut 0.0.0-20250208024103+7f46f4420ea5c787d830fc64fc7e5ba221b2dd50 #7f46f4420ea5c787d830fc64fc7e5ba221b2dd50
+  github.com/jonesz/krylov-fut 0.0.0-20250208104103+0f636010e452836086b835ddce19fbd38d872502 #0f636010e452836086b835ddce19fbd38d872502
 }
