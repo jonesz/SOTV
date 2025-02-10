@@ -60,3 +60,29 @@ module mk_kernel_rq
     |> flip (R.**) (R.neg P.a)          -- (1 + x/(2al^2))^(-a)
     |> (R.*) ((R.**) P.sigma (R.i64 2)) -- sigma^2 * (1+x/(2al^2))^(-a)
 }
+
+module add_kernel
+  (R: real)
+  (V: vector)
+  (A: kernel with s = R.t with v = V.vector R.t)
+  (B: kernel with s = R.t with v = V.vector R.t)
+  : kernel with s = R.t with v = V.vector R.t = {
+  type v = V.vector R.t
+  type s = R.t
+
+  def kernel x_0 x_1 =
+    (R.+) (A.kernel x_0 x_1) (B.kernel x_0 x_1)
+}
+
+module mul_kernel
+  (R: real)
+  (V: vector)
+  (A: kernel with s = R.t with v = V.vector R.t)
+  (B: kernel with s = R.t with v = V.vector R.t)
+  : kernel with s = R.t with v = V.vector R.t = {
+  type v = V.vector R.t
+  type s = R.t
+
+  def kernel x_0 x_1 =
+    (R.*) (A.kernel x_0 x_1) (B.kernel x_0 x_1)
+}
