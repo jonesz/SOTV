@@ -18,7 +18,9 @@ module mk_kernel_se
   (R: real)
   (V: vector)
   (P: {
-    val l : R.t
+    -- | A length scale matrix where the diagonal is `l_i^-2`, represented
+    -- as a single vector.
+    val l : V.vector R.t
     val sigma : R.t
   })
   : kernel with v = V.vector R.t with s = R.t = {
@@ -27,38 +29,13 @@ module mk_kernel_se
   module S = mk_vspace V R
 
   def kernel x_0 x_1 =
-    (S.-) x_0 x_1 |> S.quadrance         -- x := ||x_0 - x_1||^2
-    |> (R.*) ((R.**) P.l (R.i64 2)
-              |> (R.*) (R.i64 2)
-              |> R.recip
-              |> R.neg)                  -- -x/(2l^2)
-    |> R.exp                             -- exp(-x/(2l^2))
-    |> (R.*) ((R.**) P.sigma (R.i64 2))  -- sigma^2 * exp(-x/(2l^2))
-}
-
---| Rational Quadratic Kernel.
-module mk_kernel_rq
-  (R: real)
-  (V: vector)
-  (P: {
-    val l : R.t
-    val sigma : R.t
-    val a : R.t
-  })
-  : kernel with v = V.vector R.t with s = R.t = {
-  type v = V.vector R.t
-  type s = R.t
-  module S = mk_vspace V R
-
-  def kernel x_0 x_1 =
-    (S.-) x_0 x_1 |> S.quadrance        -- x := ||x_0 - x_1||^2
-    |> (R.*) ((R.**) P.l (R.i64 2)
-              |> (R.*) (R.i64 2)
-              |> (R.*) P.a
-              |> R.recip)               -- x/(2al^2)
-    |> (R.+) (R.i64 1)                  -- 1 + x/(2al^2)
-    |> flip (R.**) (R.neg P.a)          -- (1 + x/(2al^2))^(-a)
-    |> (R.*) ((R.**) P.sigma (R.i64 2)) -- sigma^2 * (1+x/(2al^2))^(-a)
+    S.map (\x_i -> (R.**) x_i (R.i64 2) |> R.recip) P.l  -- L^-2
+    |> (S.*) ((S.-) x_0 x_1)                             -- L^-2 * (x_0 - x_1)
+    |> S.dot ((S.-) x_0 x_1)                             -- x := (x_0 - x_1)^T * L^-2 * (x_0 - x_1)
+    |> (R.*) (R.i64 2 |> R.recip)                        -- 1/2 * x
+    |> R.neg                                             -- 1/2 * x * -1
+    |> R.exp                                             -- exp(1/2 * x * -1)
+    |> (R.*) ((R.**) P.sigma (R.i64 2))                  -- sigma^2 * exp(1/2 * x * -1)
 }
 
 module add_kernel
