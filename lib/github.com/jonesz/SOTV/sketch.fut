@@ -21,7 +21,7 @@ def sketch 'a [m] [n]
            (add: a -> a -> a)
            (zero: a)
            (A: [m][n]a)
-           (rng: i64 -> a)
+           (rand: i64 -> a)
            (r: i64) : [m][r]a =
   let A_fn j k = A[j][k]
-  in sketch_fn mul add zero A_fn rng m n r
+  in sketch_fn mul add zero A_fn rand m n r
